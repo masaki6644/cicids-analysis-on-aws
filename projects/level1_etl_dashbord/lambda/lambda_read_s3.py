@@ -11,16 +11,20 @@ def lambda_handler(event, context):
     # S3からオブジェクト取得
     response = s3.get_object(Bucket=bucket_name, Key=object_key)
     
-    # CSVを少しずつ読み込む
+    # CSVを読み込む
     csv_stream = StringIO(response["Body"].read().decode("utf-8"))
-    chunk_iter = pd.read_csv(csv_stream, chunksize=100)  # 100行ずつ読み込む
     
-    # 最初のチャンクだけ処理
-    first_chunk = next(chunk_iter)
-    print(first_chunk.head())  # 最初の数行だけ表示
+    df = pd.read_csv(csv_stream) 
     
+
+    # Label列ごとに分割して件数を表示
+    label_counts = df["Label"].value_counts()
+
+    for label, count in label_counts.items():
+        print(f"Label: {label}, Rows: {count}")
+
     return {
         "status": "success",
-        "rows_in_chunk": len(first_chunk)
+        "label_counts": label_counts.to_dict()
     }
 
