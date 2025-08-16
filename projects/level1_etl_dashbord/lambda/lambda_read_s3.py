@@ -16,15 +16,22 @@ def lambda_handler(event, context):
     
     df = pd.read_csv(csv_stream) 
     
+    # Label列ごとに分割
+    for label, group in df.groupby("Label"):
+        # 攻撃種別ごとに保存先フォルダを作る
+        safe_label = label.replace(" ", "_").replace("/", "_")  # フォルダ名に使えない文字を置換
+        output_key = f"processed/{safe_label}/data.csv"
 
-    # Label列ごとに分割して件数を表示
-    label_counts = df["Label"].value_counts()
+        # DataFrameをCSVに変換
+        csv_buffer = StringIO()
+        group.to_csv(csv_buffer, index=False)
 
-    for label, count in label_counts.items():
-        print(f"Label: {label}, Rows: {count}")
+        # S3へアップロード
+        s3.put_object(
+            Bucket=bucket_name,
+            Key=output_key,
+            Body=csv_buffer.getvalue()
+        )
+        print(f"Uploaded {len(group)} rows to s3://{bucket_name}/{output_key}")
 
-    return {
-        "status": "success",
-        "label_counts": label_counts.to_dict()
-    }
-
+    return {"status": "success", "labels": df["Label"].unique().tolist()}
