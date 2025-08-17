@@ -19,24 +19,26 @@ project-root/projects/level1_etl_dashboard/
 ## 実行手順
 
 1. **データ準備**  
-   CICIDS2017のCSVをダウンロードし、`data/processed/` に保存。
+   CICIDS2017のCSV(Tuesday-WorkingHours.pcap_ISCX.csv)をダウンロードし、`project-root/data`　に保存する。
+   
+   CSVファイルが大きくcommitできないので、サンプルだけ載せる
 
-2. **S3環境構築**  
-   `cicids-etl-bucket` を作成し、CSVをアップロード。
+3. **S3環境構築**  
+   `masaki-ids-etl-bucket` を作成し、CSVをアップロード。
 
-3. **Lambda関数作成**  
-   - `lambda/handler.py` をデプロイ。  
+4. **Lambda関数作成**
+   - `cicids-classifier` を作成し、`lambda/handler.py` をデプロイ。  
    - S3トリガーで攻撃種別ごとにデータを振り分け。  
 
-4. **Athena設定**  
+6. **Athena設定**  
    - Glue Crawlerでカタログ作成。  
    - AthenaでSQLクエリ実行。  
 
-5. **可視化**  
-   - `streamlit_app/app.py` を実行  
-   - `streamlit run app.py`  
+7. **可視化**  
+   - ダッシュボード表示プログラム`app.py` を実行  `streamlit run app.py`  
    - 攻撃分布を棒グラフ・円グラフで表示。  
 
-6. **成果物**  
+8. **成果物**  
    - ETLパイプライン（S3 + Lambda + Athena）  
    - 可視化ダッシュボード（Streamlit）
+
