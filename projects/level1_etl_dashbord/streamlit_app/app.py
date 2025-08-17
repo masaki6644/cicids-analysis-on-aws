@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from io import StringIO
 import boto3
+import os
 
 # === S3 から CSV を読み込む ===
 bucket_name = "masaki-ids-etl-bucket"
@@ -41,3 +42,10 @@ fig2, ax2 = plt.subplots()
 ax2.pie(df_pie['count'], labels=df_pie['Type'], autopct="%1.1f%%", startangle=90)
 st.pyplot(fig2)
 
+
+# === 出力フォルダを用意 ===
+os.makedirs("outputs", exist_ok=True)
+
+# 保存
+fig.savefig("outputs/attack_bar.png", bbox_inches="tight")
+fig2.savefig("outputs/attack_pie.png", bbox_inches="tight")
